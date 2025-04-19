@@ -11,8 +11,12 @@ export default function Home() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      if (session?.user?.role === "doctor") router.replace("/dashboard/doctor");
-      else if (session?.user?.role === "patient") router.replace("/dashboard/patient");
+      if ((session?.user as any)?.role === "doctor") {
+        router.replace("/dashboard/doctor");
+      } else if ((session?.user as any)?.role === "patient") {
+        router.replace("/dashboard/patient");
+      }
+      
     }
     // Do not redirect unauthenticated users automatically
   }, [session, status, router]);

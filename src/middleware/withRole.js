@@ -13,7 +13,7 @@ export default function withRole(Component, allowedRoles) {
       if (!session || !allowedRoles.includes(session.user.role)) {
         router.push("/");
       }
-    }, [session, status]);
+    }, [session, status,router]);
 
     if (!session || !allowedRoles.includes(session.user.role)) return null;
     return <Component {...props} />;

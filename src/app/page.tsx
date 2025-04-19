@@ -1,103 +1,125 @@
-import Image from "next/image";
+"use client";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  useEffect(() => {
+    if (status === "authenticated") {
+      if (session?.user?.role === "doctor") router.replace("/dashboard/doctor");
+      else if (session?.user?.role === "patient") router.replace("/dashboard/patient");
+    }
+    // Do not redirect unauthenticated users automatically
+  }, [session, status, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="text-2xl font-semibold text-blue-700 animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+      <motion.div
+        className="bg-white shadow-xl rounded-lg p-8 max-w-xl w-full flex flex-col items-center"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
+        {/* Animated SVG */}
+        <motion.svg
+          width="96"
+          height="96"
+          viewBox="0 0 96 96"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="mb-4"
+          initial={{ scale: 0.8, rotate: -10 }}
+          animate={{ scale: [0.8, 1.1, 1], rotate: [0, 10, 0] }}
+          transition={{ duration: 1.2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        >
+          <rect width="96" height="96" rx="24" fill="#3b82f6" fillOpacity="0.08" />
+          <circle cx="48" cy="48" r="28" fill="#fff" stroke="#3b82f6" strokeWidth="4" />
+          <motion.path
+            d="M48 34v28M34 48h28"
+            stroke="#3b82f6"
+            strokeWidth="4"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1, delay: 0.3, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+          />
+        </motion.svg>
+
+        <motion.h1
+          className="text-4xl font-bold text-blue-700 mb-3 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          Welcome to the Health Platform
+        </motion.h1>
+        <motion.p
+          className="text-lg text-gray-600 mb-6 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          Your personal health assistant! <br />
+          <span className="font-medium text-blue-600">Patients</span> can submit symptoms and images, while <span className="font-medium text-blue-600">Doctors</span> can review and respond to health issues.<br />
+          Secure, private, and easy to use.
+        </motion.p>
+        <motion.div
+          className="flex gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+        >
+          <Link
+            href="/login"
+            className="px-6 py-2 rounded bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Login
+          </Link>
+          <Link
+            href="/signup"
+            className="px-6 py-2 rounded border border-blue-600 text-blue-700 font-semibold shadow hover:bg-blue-50 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+            Sign Up
+          </Link>
+        </motion.div>
+        <motion.div
+          className="mt-6 text-center text-gray-500 text-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.5 }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <span>Demo accounts:</span>
+          <ul className="mt-2">
+            <li>
+              <b>Doctor:</b> <span className="font-mono">doctor@example.com / password</span>
+            </li>
+            <li>
+              <b>Patient:</b> <span className="font-mono">patient@example.com / password</span>
+            </li>
+          </ul>
+        </motion.div>
+      </motion.div>
+      <motion.footer
+        className="mt-8 text-gray-400 text-xs"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.8 }}
+      >
+        &copy; {new Date().getFullYear()} Health Platform. All rights reserved.
+      </motion.footer>
+    </main>
   );
 }

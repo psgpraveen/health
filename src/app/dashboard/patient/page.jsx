@@ -5,11 +5,13 @@ import HealthIssueForm from "@/components/HealthIssueForm";
 import IssueList from "@/components/IssueList";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function PatientDashboard() {
   const { data: session, status } = useSession();
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (session?.user) {
@@ -20,6 +22,8 @@ export default function PatientDashboard() {
           setIssues(data);
           setLoading(false);
         });
+    }else {
+      router.push("/");
     }
   }, [session]);
 

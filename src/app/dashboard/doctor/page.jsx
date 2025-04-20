@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import IssueList from "@/components/IssueList";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function DoctorDashboard() {
   const { data: session, status } = useSession();
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (session?.user) {
@@ -19,16 +21,15 @@ export default function DoctorDashboard() {
           setIssues(data);
           setLoading(false);
         });
+    } else {
+      router.push("/");
     }
-  }, [session]);
+  }, [session,router]);
 
-  // Calculate stats
+  // Stats
   const totalIssues = issues.length;
   const answeredIssues = issues.filter(i => i.status === "answered").length;
   const pendingIssues = totalIssues - answeredIssues;
-  const averageResponseTime = issues.length > 0 
-    ? Math.round(issues.reduce((acc, curr) => acc + curr.responseTime, 0) / issues.length)
-    : 0;
 
   if (status === "loading" || loading) {
     return (
@@ -59,7 +60,7 @@ export default function DoctorDashboard() {
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-blue-700">Dr. {session?.user?.name}</h1>
                 <p className="text-gray-500 text-base mt-1">
-                  Your Medical Dashboard - {new Date().toLocaleDateString()}
+                  Your Medical Dashboard – {new Date().toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -88,16 +89,16 @@ export default function DoctorDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.5 }}
               >
-                <span className="text-3xl font-bold text-green-700">{averageResponseTime}h</span>
-                <span className="text-sm text-gray-500">Avg. Response</span>
+                <span className="text-3xl font-bold text-green-700">{answeredIssues}</span>
+                <span className="text-sm text-gray-500">Answered</span>
               </motion.div>
             </div>
           </div>
 
-          {/* Quick Stats and Guidance */}
+          {/* Guidance Panel */}
           <div className="bg-blue-50/60 rounded-lg p-4 text-blue-700 text-center font-medium shadow">
-            <span className="font-semibold">Quick Actions:</span> Review pending cases, respond to patient queries, 
-            and track treatment progress. <span className="text-blue-500">Your expertise changes lives!</span>
+            <span className="font-semibold">Quick Actions:</span> Review and resolve patient issues below. You can respond to pending cases, view conversations, and help patients with their health concerns.<br />
+            <span className="text-blue-500">You cannot post new issues as a doctor.</span>
           </div>
 
           {/* Patient Issues List */}
@@ -105,7 +106,7 @@ export default function DoctorDashboard() {
             <h2 className="text-2xl font-semibold mb-4 text-blue-700">Patient Health Issues</h2>
             {issues.length === 0 ? (
               <div className="text-gray-500 text-center mt-4">
-                <span>No active patient issues - great job!</span>
+                <span>No active patient issues – great job!</span>
               </div>
             ) : (
               <IssueList
